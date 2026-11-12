@@ -89,6 +89,28 @@
  *                               is the URL. Left unset when the source exposes no
  *                               posting id — never filled with a requisition id,
  *                               which is shared by sibling postings.
+ * @property {{ats_provider: string, board_slug: string, posting_id: string}} [listingIdentity]
+ *                               The posting's ATS-native identity, the strong
+ *                               key of docs/listing-fingerprint.md: the provider
+ *                               slug, the board/tenant namespace the board was
+ *                               fetched at, and the posting's own id from the
+ *                               payload, never parsed out of a URL. All three
+ *                               are non-empty strings with no surrounding
+ *                               whitespace or control characters. The scanner
+ *                               does not trim, case-fold or coerce them, so two
+ *                               spellings of one id are two identities: report
+ *                               each id in one canonical form. Leave it unset
+ *                               when any part is missing: an incomplete or
+ *                               malformed triple gives no key, and the offer
+ *                               falls back to URL dedup. scan.mjs adds the
+ *                               derived key to its seen set next to the URL,
+ *                               so the same posting reached at a second URL is
+ *                               not a new row, and writes it to scan-history.tsv
+ *                               as `listing_key`. A provider never sets
+ *                               `listingKey` itself; the scanner derives it.
+ *                               `git grep -l listingIdentity --
+ *                               'providers/*.mjs'` lists the providers that
+ *                               set it; reference `providers/lever.mjs`.
  * @property {string} [requisitionId] The EMPLOYER's requisition id — the
  *                               schema.org/JobPosting `identifier` concept — from
  *                               wherever the ATS exposes it: a dedicated payload
